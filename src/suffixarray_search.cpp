@@ -7,7 +7,7 @@
 #include <seqan3/io/sequence_file/all.hpp>
 #include <seqan3/search/fm_index/fm_index.hpp>
 #include <seqan3/search/search.hpp>
-
+// aaaaa
 int main(int argc, char const* const* argv) {
     seqan3::argument_parser parser{"suffixarray_search", argc, argv, seqan3::update_notifications::off};
 

@@ -7,6 +7,37 @@
 #include <seqan3/search/fm_index/fm_index.hpp>
 #include <seqan3/search/search.hpp>
 
+//need to be checked later
+//wrong, this makes little vectors of k elements, not k vectors
+std::vector <std::vector <seqan3::dna5>> splice(int k, std::vector <seqan3::dna5> query){
+    std::vector <std::vector <seqan3::dna5>> result;
+    std::vector <seqan3::dna5> temp;
+    for (int i=0; i< query.size(); i++){
+        if((i+1)%k ==0){
+            result.push(temp);
+            temp.clear();
+        }
+        temp.push(query[i]);
+    }
+    return result;
+}
+
+//reference begin position returned will be the first position
+std :: vector <seqan3::search_result> indelVerify(auto res1, auto res2, int numErr, int partLen){
+    std :: vector <seqan3::search_result> res;
+    for (auto && result: res1){
+        int i = 0;
+        auto r2 = res2[i].reference_begin_position()
+        while (result.reference_begin_position()+ partLen + numErr >= r2 ){ //if r2 is before the end reference
+            if (result.reference_begin_position()+ partLen <= r2){
+
+            }
+            i++;
+            r2 = res2[i].reference_begin_position();
+        }
+    }
+}
+
 int main(int argc, char const* const* argv) {
     seqan3::argument_parser parser{"fmindex_pigeon_search", argc, argv, seqan3::update_notifications::off};
 
@@ -52,8 +83,21 @@ int main(int argc, char const* const* argv) {
     queries.resize(100); // will reduce the amount of searches
 
 
+    //--------------------------------------check splice funct first ------------------------------------
+
     //!TODO !ImplementMe use the seqan3::search to find a partial error free hit, verify the rest inside the text
     // Pseudo code (might be wrong):
+    std :: vector<auto> results;
+    for (int i = 0; i< queries.size(); i++){
+        std::vector <std::vector <seqan3::dna5>> div = splice (3, queries[i]);
+        for (int j = 0 ; j < div.size(); j+=){
+            results.push(seqan3::search(queries, index));
+        }
+        //bikin func verify
+    }
+    
+
+
     // for query in queries:
     //      parts[3] = cut_query(3, query);
     //      for p in {0, 1, 2}:

@@ -1,4 +1,7 @@
 #include <sstream>
+#include <chrono>
+
+#include <seqan3/std/filesystem>
 
 #include <seqan3/alphabet/nucleotide/dna5.hpp>
 #include <seqan3/argument_parser/all.hpp>
@@ -51,8 +54,16 @@ int main(int argc, char const* const* argv) {
     //!TODO here adjust the number of searches
     queries.resize(100); // will reduce the amount of searches
 
-
+    const std::chrono::time_point<std::chrono::steady_clock> start = std::chrono::steady_clock::now();
     //!TODO !ImplementMe use the seqan3::search function to search
+    auto results = seqan3::search(queries, index);
+
+    for (auto && result : results) 
+    {
+        seqan3::debug_stream << "\tFound query " << result.query_id() << " at " << result.reference_begin_position() << "\n";
+    }
+    const auto end = std::chrono::steady_clock::now();
+    std::cout << "The Program took " <<  std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count() << "ms.\n";
 
     return 0;
 }

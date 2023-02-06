@@ -11,15 +11,15 @@ std::vector <std::vector <seqan3::dna5>> splice(int numSlice, std::vector <seqan
     int elementNum = query.size() / numSlice;
     std::vector <std::vector <seqan3::dna5>> result;
     std::vector <seqan3::dna5> temp;
-    temp.push(query[0]);
+    temp.push_back(query[0]);
     for (int i=1, i< query.size(), i++){
         if(i % elementNum == 0){
-            result.push(temp);
+            result.push_back(temp);
             temp.clear();
         }
-        temp.push(query[i]);
+        temp.push_back(query[i]);
     }
-    if (!temp.empty()) result.push(temp);
+    if (!temp.empty()) result.push_back(temp);
     return result;
 }
 

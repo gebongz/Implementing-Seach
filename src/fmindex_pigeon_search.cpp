@@ -1,5 +1,4 @@
 #include <sstream>
-#include <cmath>
 #include <seqan3/alphabet/nucleotide/dna5.hpp>
 #include <seqan3/argument_parser/all.hpp>
 #include <seqan3/core/debug_stream.hpp>
@@ -7,36 +6,46 @@
 #include <seqan3/search/fm_index/fm_index.hpp>
 #include <seqan3/search/search.hpp>
 
-//need to be checked
+//this should also be okay
 std::vector <std::vector <seqan3::dna5>> splice(int numSlice, std::vector <seqan3::dna5> query){
-    float aa = query.size();
-    int elementNum = (int) std:: ceil( (float) aa / numSlice); //check this again
+    int elementNum = query.size() / numSlice;
     std::vector <std::vector <seqan3::dna5>> result;
     std::vector <seqan3::dna5> temp;
     temp.push(query[0]);
     for (int i=1, i< query.size(), i++){
-        if(i % elementNum ==0){
+        if(i % elementNum == 0){
             result.push(temp);
             temp.clear();
         }
         temp.push(query[i]);
     }
+    if (!temp.empty()) result.push(temp);
     return result;
 }
 
 //reference begin position returned will be the first position
 //i think this should be good
-std :: vector <seqan3::search_result> indelVerify(auto res1, auto res2, int k, int partLen){
-    std :: vector <seqan3::search_result> res;
-    for (auto && result: res1){
-        for (int i =0, i < res2.size(), i++){
-            r2 = res2[i].reference_begin_position();
-            if (result.reference_begin_position()+ partLen <= r2 && result.reference_begin_position()+ partLen + k >= r2){
-                res.push(result);
+int hamVerify(auto refPart, auto query){
+    int count = 0;
+    for (int i = 0, i < refPart.size(), i++){
+        if (refPart[i] != query[i]) count++;
+    }
+    return count;
+}
+
+void mismatch(std::vector<seqan3::dna5> const& ref, std::vector<seqan3::dna5> const& query, auto& index, int k){
+    std::vector <std::vector <seqan3::dna5>> qParts = splice(k+1, query);
+    int totalLen = query.size();
+    int shiftSize = totalLen / (k+1);
+    for(int i = 0, i < qParts.size()){
+        auto results = seqan3::search(lilQuery, index);
+        for(auto& res : results){
+            auto shift = res.reference_begin_position() + i * shiftSize;
+            if (hamVerify(ref[shift], query) <= k){
+                std:: cout<< "found query at " << shift;
             }
         }
     }
-    return res;
 }
 
 int main(int argc, char const* const* argv) {
@@ -44,6 +53,9 @@ int main(int argc, char const* const* argv) {
 
     parser.info.author = "SeqAn-Team";
     parser.info.version = "1.0.0";
+
+    auto reference_file = std::filesystem::path{};
+    parser.add_option(reference_file, '\0', "reference", "path to the reference file");
 
     auto index_path = std::filesystem::path{};
     parser.add_option(index_path, '\0', "index", "path to the query file");
@@ -59,12 +71,17 @@ int main(int argc, char const* const* argv) {
     }
 
     // loading our files
+    auto reference_stream = seqan3::sequence_file_input{reference_file};
     auto query_stream     = seqan3::sequence_file_input{query_file};
 
-    // read query into memory
+    // read query n ref into memory
     std::vector<std::vector<seqan3::dna5>> queries;
     for (auto& record : query_stream) {
         queries.push_back(record.sequence());
+    }
+    std::vector<std::vector<seqan3::dna5>> reference;
+    for (auto& record : reference_stream) {
+        reference.push_back(record.sequence());
     }
 
     // loading fm-index into memory
@@ -79,38 +96,18 @@ int main(int argc, char const* const* argv) {
     }
 
     seqan3::configuration const cfg0 = seqan3::search_cfg::max_error_total{seqan3::search_cfg::error_count{0}};
-    seqan3::configuration const cfg1 = seqan3::search_cfg::max_error_total{seqan3::search_cfg::error_count{1}};
 
     //!TODO here adjust the number of searches
     queries.resize(100); // will reduce the amount of searches
-
-
-    //--------------------------------------check splice funct first ------------------------------------
+    k=2;
+    //only using 1 reference, for multiple queries
+    for (auto& q : queries){
+        mismatch(reference[0], q, index, k);
+    }
+    
 
     //!TODO !ImplementMe use the seqan3::search to find a partial error free hit, verify the rest inside the text
     // Pseudo code (might be wrong):
-    std :: vector<auto> results;
-    int k=2;
-    for (int i = 0; i< queries.size(); i++){
-        //for each query
-        std::vector <std::vector <seqan3::dna5>> div = splice (k+1, queries[i]);
-        for (int j = 0 ; j < k+1 ; j++){
-            results.push(seqan3::search(queries, index, cfg0));
-        }
-        std::vector <seqan3::search_result> res = indelVerify(results[0], results[1], 1, div[0].size());
-        if (res.empty()) std::cout<<"lol no matches";
-        else{
-            std::vector <seqan3::search_result> res2 = indelVerify(res, results[2], 1, div[1].size());
-            if (res2.empty()){
-                std::cout<<"lol no matches";
-            }
-            else
-            {
-                for (int k = 0, k <res2.size(), k++) seqan3::debug_stream << "\tFound query " << res[i].query_id() << " at " << res[i].reference_begin_position() << "\n";
-            }
-        }
-    }
-    
     // for query in queries:
     //      parts[3] = cut_query(3, query);
     //      for p in {0, 1, 2}:

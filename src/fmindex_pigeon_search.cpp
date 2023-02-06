@@ -12,7 +12,7 @@ std::vector <std::vector <seqan3::dna5>> splice(int numSlice, std::vector <seqan
     std::vector <std::vector <seqan3::dna5>> result;
     std::vector <seqan3::dna5> temp;
     temp.push_back(query[0]);
-    for (int i=1, i< query.size(), i++){
+    for (int i=1; i< query.size(); i++){
         if(i % elementNum == 0){
             result.push_back(temp);
             temp.clear();
@@ -27,7 +27,7 @@ std::vector <std::vector <seqan3::dna5>> splice(int numSlice, std::vector <seqan
 //i think this should be good
 int hamVerify(auto refPart, auto query){
     int count = 0;
-    for (int i = 0, i < refPart.size(), i++){
+    for (int i = 0; i < refPart.size(); i++){
         if (refPart[i] != query[i]) count++;
     }
     return count;
@@ -37,7 +37,7 @@ void mismatch(std::vector<seqan3::dna5> const& ref, std::vector<seqan3::dna5> co
     std::vector <std::vector <seqan3::dna5>> qParts = splice(k+1, query);
     int totalLen = query.size();
     int shiftSize = totalLen / (k+1);
-    for(int i = 0, i < qParts.size()){
+    for(int i = 0; i < qParts.size(); i++){
         auto results = seqan3::search(lilQuery, index);
         for(auto& res : results){
             auto shift = res.reference_begin_position() + i * shiftSize;

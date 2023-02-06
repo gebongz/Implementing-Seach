@@ -35,7 +35,7 @@ std::vector <std::vector <seqan3::dna5>> splice(int numSlice, std::vector <seqan
 // }
 
 
-void mismatch(std::vector<seqan3::dna5> const& ref, std::vector<seqan3::dna5> const& query, auto& index, int k){
+void mismatch(std::vector<std::vector<seqan3::dna5>> const& ref, std::vector<seqan3::dna5> const& query, auto& index, int k){
     std::vector <std::vector <seqan3::dna5>> qParts = splice(k+1, query);
     int totalLen = query.size();
     int shiftSize = totalLen / (k+1);

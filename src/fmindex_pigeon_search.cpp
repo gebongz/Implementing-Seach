@@ -25,13 +25,15 @@ std::vector <std::vector <seqan3::dna5>> splice(int numSlice, std::vector <seqan
 
 //reference begin position returned will be the first position
 //i think this should be good
-int hamVerify(auto refPart, auto query){
-    int count = 0;
-    for (int i = 0; i < refPart.size(); i++){
-        if (refPart[i] != query[i]) count++;
-    }
-    return count;
-}
+// --------------------------copy pasted into mismatch
+// int hamVerify(auto refPart, auto query){
+//     int count = 0;
+//     for (int i = 0; i < query.size(); i++){
+//         if (refPart[i] != query[i]) count++;
+//     }
+//     return count;
+// }
+
 
 void mismatch(std::vector<seqan3::dna5> const& ref, std::vector<seqan3::dna5> const& query, auto& index, int k){
     std::vector <std::vector <seqan3::dna5>> qParts = splice(k+1, query);
@@ -40,10 +42,17 @@ void mismatch(std::vector<seqan3::dna5> const& ref, std::vector<seqan3::dna5> co
     for(int i = 0; i < qParts.size(); i++){
         auto results = seqan3::search(qParts[i], index);
         for(auto& res : results){
-            auto shift = res.reference_begin_position() + i * shiftSize;
-            if (hamVerify(ref[shift], query) <= k){
-                std:: cout<< "found query at " << shift;
+            auto shift = res.reference_begin_position() - i * shiftSize;
+            if (shift >= 0){
+                int count = 0;
+                for (int j = 0; j < query.size(); j++){
+                    if (ref[j + shift] != query[j]) count++;
+                }
+                if (count <= k){
+                    std:: cout<< "found query at " << shift;
+                }
             }
+            
         }
     }
 }

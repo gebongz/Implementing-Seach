@@ -49,7 +49,7 @@ void mismatch(std::vector<std::vector<seqan3::dna5>> const& ref, std::vector<seq
                     if (ref[res.reference_id()][j + shift] != query[j]) count++;
                 }
                 if (count <= k){
-                    std:: cout<< "found query at " << shift;
+                    std:: cout<< "found query at " << shift <<"/n";
                 }
             }
             

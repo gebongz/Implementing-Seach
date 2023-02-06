@@ -38,7 +38,7 @@ void mismatch(std::vector<seqan3::dna5> const& ref, std::vector<seqan3::dna5> co
     int totalLen = query.size();
     int shiftSize = totalLen / (k+1);
     for(int i = 0; i < qParts.size(); i++){
-        auto results = seqan3::search(lilQuery, index);
+        auto results = seqan3::search(qParts[i], index);
         for(auto& res : results){
             auto shift = res.reference_begin_position() + i * shiftSize;
             if (hamVerify(ref[shift], query) <= k){

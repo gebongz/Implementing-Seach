@@ -111,7 +111,7 @@ int main(int argc, char const* const* argv) {
     int k=2;
     //only using 1 reference, for multiple queries
     for (auto& q : queries){
-        mismatch(reference[0], q, index, k);
+        mismatch(reference, q, index, k);
     }
     
 

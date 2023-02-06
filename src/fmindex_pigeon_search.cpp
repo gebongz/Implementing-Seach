@@ -99,7 +99,7 @@ int main(int argc, char const* const* argv) {
 
     //!TODO here adjust the number of searches
     queries.resize(100); // will reduce the amount of searches
-    k=2;
+    int k=2;
     //only using 1 reference, for multiple queries
     for (auto& q : queries){
         mismatch(reference[0], q, index, k);

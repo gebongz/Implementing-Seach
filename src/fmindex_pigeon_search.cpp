@@ -38,38 +38,38 @@ std::vector <std::vector <seqan3::dna5>> splice(int numSlice, std::vector <seqan
 // }
 
 
-void mismatch(std::vector<std::vector<seqan3::dna5>> const& ref, std::vector<seqan3::dna5> const& query, auto& index, int k){
-    std::vector <std::vector <seqan3::dna5>> qParts = splice(k+1, query);
-    int totalLen = query.size();
-    int shiftSize = totalLen / (k+1);
-    int numQParts = qParts.size();
-    for(int i = 0; i < numQParts; i++){
-        auto results = seqan3::search(qParts[i], index);
-        //seqan3::debug_stream << "search finished\n";
-        for(auto& res : results){
-            auto beginPos = res.reference_begin_position();
-            auto shift = beginPos - i * shiftSize;
-            int count = 0;
-            int j=0;
-            //match left
-            while (j < (i * shiftSize) && count <= k){
-                if (ref[res.reference_id()][j + shift] != query[j]) count++;
-                j++;
-            }
-            if (count<=k){
-                //match right
-                j += qParts[i].size()-1;
-                while (j < totalLen && count <= k ){
-                    if (ref[res.reference_id()][j + shift] != query[j]) count++;
-                    j++;
-                }
-            }
-            if (count <= k){
-                seqan3::debug_stream << "found query at " << shift <<" with "<< count <<" errors\n";
-            }
-        }
-    }
-}
+// void mismatch(std::vector<std::vector<seqan3::dna5>> const& ref, std::vector<seqan3::dna5> const& query, auto& index, int k){
+//     std::vector <std::vector <seqan3::dna5>> qParts = splice(k+1, query);
+//     int totalLen = query.size();
+//     int shiftSize = totalLen / (k+1);
+//     int numQParts = qParts.size();
+//     for(int i = 0; i < numQParts; i++){
+//         auto results = seqan3::search(qParts[i], index);
+//         //seqan3::debug_stream << "search finished\n";
+//         for(auto& res : results){
+//             auto beginPos = res.reference_begin_position();
+//             auto shift = beginPos - i * shiftSize;
+//             int count = 0;
+//             int j=0;
+//             //match left
+//             while (j < (i * shiftSize) && count <= k){
+//                 if (ref[res.reference_id()][j + shift] != query[j]) count++;
+//                 j++;
+//             }
+//             if (count<=k){
+//                 //match right
+//                 j += qParts[i].size()-1;
+//                 while (j < totalLen && count <= k ){
+//                     if (ref[res.reference_id()][j + shift] != query[j]) count++;
+//                     j++;
+//                 }
+//             }
+//             if (count <= k){
+//                 seqan3::debug_stream << "found query at " << shift <<" with "<< count <<" errors\n";
+//             }
+//         }
+//     }
+// }
 
 int main(int argc, char const* const* argv) {
     seqan3::argument_parser parser{"fmindex_pigeon_search", argc, argv, seqan3::update_notifications::off};
@@ -127,7 +127,37 @@ int main(int argc, char const* const* argv) {
     const std::chrono::time_point<std::chrono::steady_clock> start = std::chrono::steady_clock::now();
     for (auto& q : queries){
         //seqan3::debug_stream << "query ID: "<<q <<"\n" ;
-        mismatch(reference, q, index, k);
+        //mismatch(reference, q, index, k);
+        std::vector <std::vector <seqan3::dna5>> qParts = splice(k+1, q);
+        int totalLen = q.size();
+        int shiftSize = totalLen / (k+1);
+        int numQParts = k+1;
+        for(int i = 0; i < numQParts; i++){
+            auto results = seqan3::search(qParts[i], index);
+            //seqan3::debug_stream << "search finished\n";
+            for(auto& res : results){
+                auto beginPos = res.reference_begin_position();
+                auto shift = beginPos - i * shiftSize;
+                int count = 0;
+                int j=0;
+                //match left
+                while (j < (i * shiftSize) && count <= k){
+                    if (reference[res.reference_id()][j + shift] != q[j]) count++;
+                    j++;
+                }
+                if (count<=k){
+                    //match right
+                    j += qParts[i].size()-1;
+                    while (j < totalLen && count <= k ){
+                        if (reference[res.reference_id()][j + shift] != q[j]) count++;
+                        j++;
+                    }
+                }
+                if (count <= k){
+                    seqan3::debug_stream << "found query at " << shift <<" with "<< count <<" errors\n";
+                }
+            }
+        }
     }
     const auto end = std::chrono::steady_clock::now();
 

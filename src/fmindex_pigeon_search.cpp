@@ -86,9 +86,6 @@ int main(int argc, char const* const* argv) {
     auto query_file = std::filesystem::path{};
     parser.add_option(query_file, '\0', "query", "path to the query file");
 
-    auto query_file = std::filesystem::path{};
-    parser.add_option(query_file, '\0', "query", "path to the query file");
-
     auto queryNum = int{100};
     parser.add_option(queryNum, '\0', "query_ct", "number of query, if not enough queries, these will be duplicated");
 

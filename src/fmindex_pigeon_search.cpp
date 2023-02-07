@@ -1,4 +1,5 @@
 #include <sstream>
+#include <chrono>
 #include <seqan3/alphabet/nucleotide/dna5.hpp>
 #include <seqan3/argument_parser/all.hpp>
 #include <seqan3/core/debug_stream.hpp>
@@ -44,7 +45,7 @@ void mismatch(std::vector<std::vector<seqan3::dna5>> const& ref, std::vector<seq
     int numQParts = qParts.size();
     for(int i = 0; i < numQParts; i++){
         auto results = seqan3::search(qParts[i], index);
-        seqan3::debug_stream << "search finished\n";
+        //seqan3::debug_stream << "search finished\n";
         for(auto& res : results){
             auto beginPos = res.reference_begin_position();
             auto shift = beginPos - i * shiftSize;
@@ -66,12 +67,8 @@ void mismatch(std::vector<std::vector<seqan3::dna5>> const& ref, std::vector<seq
             if (count <= k){
                 seqan3::debug_stream << "found query at " << shift <<" with "<< count <<" errors\n";
             }
-            //seqan3::debug_stream << "mm: im loop end \n";
         }
-        //seqan3::debug_stream << "mm: mid loop end \n";
     }
-    //seqan3::debug_stream << "mm: last loop end\n";
-
 }
 
 int main(int argc, char const* const* argv) {
@@ -126,12 +123,15 @@ int main(int argc, char const* const* argv) {
     //!TODO here adjust the number of searches
     queries.resize(50); // will reduce the amount of searches
     int k=2;
-    //only using 1 reference, for multiple queries
+    
+    const std::chrono::time_point<std::chrono::steady_clock> start = std::chrono::steady_clock::now();
     for (auto& q : queries){
-        seqan3::debug_stream << "query ID: "<<q <<"\n" ;
+        //seqan3::debug_stream << "query ID: "<<q <<"\n" ;
         mismatch(reference, q, index, k);
     }
-    
+    const auto end = std::chrono::steady_clock::now();
+
+    seqan3::debug_stream << "The Program took " <<  std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count() << "ms.\n";
 
     //!TODO !ImplementMe use the seqan3::search to find a partial error free hit, verify the rest inside the text
     // Pseudo code (might be wrong):

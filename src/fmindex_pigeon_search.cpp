@@ -64,7 +64,7 @@ void mismatch(std::vector<std::vector<seqan3::dna5>> const& ref, std::vector<seq
                 }
             }
             if (count <= k){
-                seqan3::debug_stream << "found query at " << shift <<"with "<< count <<" errors\n";
+                seqan3::debug_stream << "found query at " << shift <<" with "<< count <<" errors\n";
             }
             //seqan3::debug_stream << "mm: im loop end \n";
         }

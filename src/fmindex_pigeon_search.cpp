@@ -43,14 +43,12 @@ void mismatch(std::vector<std::vector<seqan3::dna5>> const& ref, std::vector<seq
         auto results = seqan3::search(qParts[i], index);
         for(auto& res : results){
             auto shift = res.reference_begin_position() - i * shiftSize;
-            if (shift >= 0){
-                int count = 0;
-                for (int j = 0; j < query.size(); j++){
-                    if (ref[res.reference_id()][j + shift] != query[j]) count++;
-                }
-                if (count <= k){
-                    std:: cout<< "found query at " << shift <<"/n";
-                }
+            int count = 0;
+            for (int j = 0; j < query.size(); j++){
+                if (ref[res.reference_id()][j + shift] != query[j]) count++;
+            }
+            if (count <= k){
+                std:: cout<< "found query at " << shift <<"/n";
             }
             
         }

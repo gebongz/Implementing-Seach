@@ -41,20 +41,21 @@ void mismatch(std::vector<std::vector<seqan3::dna5>> const& ref, std::vector<seq
     int shiftSize = totalLen / (k+1);
     for(int i = 0; i < qParts.size(); i++){
         auto results = seqan3::search(qParts[i], index);
+        seqan3::debug_stream << "search finished\n";
         for(auto& res : results){
             auto shift = res.reference_begin_position() - i * shiftSize;
             int count = 0;
-            for (int j = 0; j < query.size(); j++){
+            for (int j = 0; j < query.size() && count <= k ; j++){
                 if (ref[res.reference_id()][j + shift] != query[j]) count++;
             }
             if (count <= k){
                 seqan3::debug_stream << "found query at " << shift <<"\n";
             }
-            seqan3::debug_stream << "mm: inner-most for loop end";
+            //seqan3::debug_stream << "mm: im loop end \n";
         }
-            seqan3::debug_stream << "mm: mid for loop end";
+        //seqan3::debug_stream << "mm: mid loop end \n";
     }
-    seqan3::debug_stream << "mm: last for loop end";
+    //seqan3::debug_stream << "mm: last loop end\n";
 
 }
 
@@ -112,6 +113,7 @@ int main(int argc, char const* const* argv) {
     int k=2;
     //only using 1 reference, for multiple queries
     for (auto& q : queries){
+        seqan3::debug_stream << "query ID: "<<q <<"\n" ;
         mismatch(reference, q, index, k);
     }
     

@@ -50,9 +50,12 @@ void mismatch(std::vector<std::vector<seqan3::dna5>> const& ref, std::vector<seq
             if (count <= k){
                 seqan3::debug_stream << "found query at " << shift <<"\n";
             }
-            
+            seqan3::debug_stream << "mm: inner-most for loop end";
         }
+            seqan3::debug_stream << "mm: mid for loop end";
     }
+    seqan3::debug_stream << "mm: last for loop end";
+
 }
 
 int main(int argc, char const* const* argv) {
@@ -121,6 +124,6 @@ int main(int argc, char const* const* argv) {
     //          for (pos in search(index, part[p]):
     //              if (verify(ref, query, pos +- ....something)):
     //                  std::cout << "found something\n"
-
+    seqan3::debug_stream << "function end";
     return 0;
 }

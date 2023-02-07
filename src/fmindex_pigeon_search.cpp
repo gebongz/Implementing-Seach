@@ -57,7 +57,7 @@ void mismatch(std::vector<std::vector<seqan3::dna5>> const& ref, std::vector<seq
             }
             if (count<=k){
                 //match right
-                j = qParts[i].size() + i * shiftSize;
+                j += qParts[i].size()-1;
                 while (j < totalLen && count <= k ){
                     if (ref[res.reference_id()][j + shift] != query[j]) count++;
                     j++;

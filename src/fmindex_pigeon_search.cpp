@@ -128,7 +128,6 @@ int main(int argc, char const* const* argv) {
 
     //!TODO here adjust the number of searches
     queries.resize(queryNum); // will reduce the amount of searches
-    int k=2;
     
     const std::chrono::time_point<std::chrono::steady_clock> start = std::chrono::steady_clock::now();
     for (auto& q : queries){

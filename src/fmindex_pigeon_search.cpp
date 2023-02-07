@@ -8,11 +8,13 @@
 
 //this should also be okay
 std::vector <std::vector <seqan3::dna5>> splice(int numSlice, std::vector <seqan3::dna5> query){
-    int elementNum = query.size() / numSlice;
+    int qSize = query.size() ;
+    int elementNum = qSize / numSlice;
     std::vector <std::vector <seqan3::dna5>> result;
     std::vector <seqan3::dna5> temp;
+
     temp.push_back(query[0]);
-    for (int i=1; i< query.size(); i++){
+    for (int i=1; i< qSize; i++){
         if(i % elementNum == 0){
             result.push_back(temp);
             temp.clear();
@@ -39,17 +41,30 @@ void mismatch(std::vector<std::vector<seqan3::dna5>> const& ref, std::vector<seq
     std::vector <std::vector <seqan3::dna5>> qParts = splice(k+1, query);
     int totalLen = query.size();
     int shiftSize = totalLen / (k+1);
-    for(int i = 0; i < qParts.size(); i++){
+    int numQParts = qParts.size()
+    for(int i = 0; i < numQParts; i++){
         auto results = seqan3::search(qParts[i], index);
         seqan3::debug_stream << "search finished\n";
         for(auto& res : results){
-            auto shift = res.reference_begin_position() - i * shiftSize;
+            auto beginPos = res.reference_begin_position();
+            auto shift = beginPos - i * shiftSize;
             int count = 0;
-            for (int j = 0; j < query.size() && count <= k ; j++){
+            int j=0;
+            //match left
+            while (j < (i * shiftSize) && count <= k){
                 if (ref[res.reference_id()][j + shift] != query[j]) count++;
+                j++;
+            }
+            if (count<=k){
+                //match right
+                j = qParts[i].size() + i * shiftSize;
+                while (j < totalLen && count <= k ){
+                    if (ref[res.reference_id()][j + shift] != query[j]) count++;
+                    j++;
+                }
             }
             if (count <= k){
-                seqan3::debug_stream << "found query at " << shift <<"\n";
+                seqan3::debug_stream << "found query at " << shift <<"with "<< count <<" errors\n";
             }
             //seqan3::debug_stream << "mm: im loop end \n";
         }

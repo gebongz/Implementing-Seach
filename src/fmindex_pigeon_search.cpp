@@ -86,6 +86,15 @@ int main(int argc, char const* const* argv) {
     auto query_file = std::filesystem::path{};
     parser.add_option(query_file, '\0', "query", "path to the query file");
 
+    auto query_file = std::filesystem::path{};
+    parser.add_option(query_file, '\0', "query", "path to the query file");
+
+    auto queryNum = int{100};
+    parser.add_option(queryNum, '\0', "query_ct", "number of query, if not enough queries, these will be duplicated");
+
+    auto k = int{0};
+    parser.add_option(k, '\0', "errors", "number of allowed hamming distance errors");
+
     try {
          parser.parse();
     } catch (seqan3::argument_parser_error const& ext) {
@@ -121,7 +130,7 @@ int main(int argc, char const* const* argv) {
     seqan3::configuration const cfg0 = seqan3::search_cfg::max_error_total{seqan3::search_cfg::error_count{0}};
 
     //!TODO here adjust the number of searches
-    queries.resize(50); // will reduce the amount of searches
+    queries.resize(queryNum); // will reduce the amount of searches
     int k=2;
     
     const std::chrono::time_point<std::chrono::steady_clock> start = std::chrono::steady_clock::now();

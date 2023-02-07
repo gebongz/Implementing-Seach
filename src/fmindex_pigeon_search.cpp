@@ -41,7 +41,7 @@ void mismatch(std::vector<std::vector<seqan3::dna5>> const& ref, std::vector<seq
     std::vector <std::vector <seqan3::dna5>> qParts = splice(k+1, query);
     int totalLen = query.size();
     int shiftSize = totalLen / (k+1);
-    int numQParts = qParts.size()
+    int numQParts = qParts.size();
     for(int i = 0; i < numQParts; i++){
         auto results = seqan3::search(qParts[i], index);
         seqan3::debug_stream << "search finished\n";
